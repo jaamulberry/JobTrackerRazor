@@ -1,4 +1,4 @@
-namespace JobAppBlazorWeb.Models;
+namespace JobAppRazorWeb.Models;
 
 public class JobViewModel
 {

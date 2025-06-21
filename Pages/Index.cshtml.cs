@@ -1,7 +1,6 @@
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace JobAppBlazorWeb.Pages;
+namespace JobAppRazorWeb.Pages;
 
 public class IndexModel : PageModel
 {

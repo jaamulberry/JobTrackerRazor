@@ -1,5 +1,5 @@
 using System.Collections.Immutable;
-using JobAppBlazorWeb.Services;
+using JobAppRazorWeb.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 

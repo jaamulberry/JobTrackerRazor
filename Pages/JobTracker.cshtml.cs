@@ -1,10 +1,9 @@
+using JobAppRazorWeb.Models;
+using JobAppRazorWeb.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using JobAppBlazorWeb.Models;
-using JobAppBlazorWeb.Services;
 
-
-namespace JobAppBlazorWeb.Pages;
+namespace JobAppRazorWeb.Pages;
 
 public class JobsModel(IDaBase daBase) : PageModel
 {
