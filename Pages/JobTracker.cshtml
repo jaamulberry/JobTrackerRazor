@@ -1,0 +1,183 @@
+@page "/jobs"
+@model JobsModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <title>Job Tracker</title>
+</head>
+<body>
+<input type="hidden" name="__RequestVerificationToken" value="@Antiforgery.GetAndStoreTokens(HttpContext).RequestToken" />
+<div>
+    <div class="d-flex justify-content-between p-1">
+        <form id="filter-form" method="get">
+            <label><input type="checkbox" name="ShowApplied" asp-for="ShowApplied" id="applied-checkbox"/> Show Applied</label>
+            <label><input type="checkbox" name="HideNo" asp-for="HideNo" id="hide-checkbox"/> Hide ❌</label>
+            <div class="d-inline-flex align-items-center gap-1">
+                <input type="text" asp-for="CompanySearch" autocomplete="off" class="form-control d-inline trim-columns"
+                       id="company-search" placeholder="Search By Company"/>
+                <button class="btn btn-danger btn-sm" onclick="clearInput('company-search')">X</button>
+            </div>
+            <div class="d-inline-flex align-items-center gap-1">
+                <input type="text" asp-for="UrlSearch" autocomplete="off" class="form-control d-inline trim-columns"
+                       id="url-search" placeholder="Search By URL"/>
+                <button class="btn btn-danger btn-sm" onclick="clearInput('url-search')">X</button>
+            </div>
+
+            @*
+                    <label><input type="date" asp-for="ShowDates"/> Date Filter</label>
+                *@
+        </form>
+        <div>
+            <span
+                id="new-jobs-today-count">🆕 Jobs Found Today: @Model.JobTracker.NewJobCount ℹ️ Available to apply: @Model.JobTracker.NewJobAvailableCount</span>
+            <span id="applied-today-count">🗓️ Applied Today: @Model.JobTracker.AppliedTodayCount</span>
+        </div>
+    </div>
+    <br/>
+    <table class="table table-dark table-striped">
+        <thead>
+        <tr class="border border-dark bg-danger">
+            <th>#</th>
+            <th>Job Board</th>
+            <th>Company</th>
+            <th>Title</th>
+            <th>First Seen</th>
+            <th>Last Seen</th>
+            <th>Apply</th>
+            <th>Applied On</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var job in Model.JobTracker.Jobs)
+        {
+            <tr>
+                <td>@job.JobIndex</td>
+                <td class="text-truncate border-end trim-columns" title="Job ID: @job.JobId">@job.JobBoard</td>
+                <td class="text-truncate border-end trim-columns" title="@job.Company"
+                    onclick="setToInput(this)">@job.Company</td>
+                <td class="text-truncate border-end trim-columns" title="@job.Title">@job.Title</td>
+                <td class="text-nowrap  border-end">@job.FirstSeen.ToString("MM-dd hh:mm tt")</td>
+                <td class="text-nowrap  border-end">@job.LastSeen.ToString("MM-dd hh:mm tt")</td>
+                <td class="text-truncate border-end" style="max-width: 500px;" title="@job.ApplyUrl">
+                    <a href="@job.ApplyUrl" target="_blank">@job.ApplyUrl</a>
+                </td>
+                <td class="text-nowrap  border-end">
+                    @if (!string.IsNullOrWhiteSpace(job.Applied) && job.Applied.ToUpper() == "NO")
+                    {
+                        @:❌
+                    }
+                    else
+                    {
+                        if (job.AppliedOn.HasValue)
+                        {
+                            @job.AppliedOn.Value.ToString("MM-dd hh:mm tt")
+                        }
+                    }
+                </td>
+                <td>
+                    <button class="btn btn-sm" type="button" onclick="modifyApplication('applied', '@job.JobId')">✅</button>
+                    <button class="btn btn-sm" type="button" onclick="modifyApplication('duplicate', '@job.JobId')">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style="fill: #e8ce00; height: 16px;"><path d="M208 0L332.1 0c12.7 0 24.9 5.1 33.9 14.1l67.9 67.9c9 9 14.1 21.2 14.1 33.9L448 336c0 26.5-21.5 48-48 48l-192 0c-26.5 0-48-21.5-48-48l0-288c0-26.5 21.5-48 48-48zM48 128l80 0 0 64-64 0 0 256 192 0 0-32 64 0 0 48c0 26.5-21.5 48-48 48L48 512c-26.5 0-48-21.5-48-48L0 176c0-26.5 21.5-48 48-48z"/></svg>
+                    </button>
+                    <button class="btn btn-sm" type="button" onclick="modifyApplication('ignore', '@job.JobId')">❌</button>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+
+</div>
+</body>
+
+<script>
+    //Reload page on changes
+    const RELOAD_CHECK_INTERVAL = 3000; // ms
+    let lastModified = null;
+
+    async function checkForChanges() {
+        const res = await fetch('/_contenthash.txt', {cache: 'no-cache'});
+        const text = await res.text();
+        if (lastModified && lastModified !== text.trim()) {
+            console.log('Change detected, reloading...');
+            location.reload();
+        }
+        lastModified = text.trim();
+    }
+
+    setInterval(checkForChanges, RELOAD_CHECK_INTERVAL);
+
+    //Submit form on changes
+    let form = document.getElementById("filter-form");
+
+    form.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' && event.target.tagName !== 'TEXTAREA') {
+            event.preventDefault(); // prevent native form submission
+            form.submit(); // trigger your custom submit behavior
+        }
+    });
+    
+    //If a checkbox changes submit the form
+    document.querySelectorAll('#filter-form input[type="checkbox"]').forEach(cb => {
+        cb.addEventListener('change', () => {
+            form.submit();
+        });
+    });
+    
+    //Clicking on a company will search for that company
+    function setToInput(el) {
+        document.getElementById("company-search").value = el.textContent.trim();
+        form.submit();
+    }
+    
+    //Clicking x will clear that search form
+    function clearInput(elementId) {
+        document.getElementById(elementId).value = "";
+        form.submit();
+    }
+    
+    //Modify Job clicks
+
+    async function modifyApplication(action, jobId) {
+        
+        let payload = {
+            jobId: jobId
+        }
+        
+        if (action === 'applied') {
+            payload.applied = "YES";
+            payload.appliedOn = new Date().toISOString();
+        }
+        if (action === 'duplicate') {
+            payload.applied = "DUPE"
+        }
+        if (action === 'ignore'){
+            payload.applied = "NO"
+        }
+        
+        const response = await fetch('?handler=ModifyApplication', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+            },
+            body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+            console.error('Failed to update job', await response.text());
+            return;
+        }
+
+        const result = await response.json();
+        console.log('Job updated successfully:', result);
+        const url = new URL(window.location.href);
+        url.searchParams.set('jobId', result);
+        window.location.href = url.toString();
+    }
+</script>
+
+</html>
