@@ -7,17 +7,17 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["JobAppBlazorWeb.csproj", "./"]
-RUN dotnet restore "JobAppBlazorWeb.csproj"
+COPY ["JobAppRazorWeb.csproj", "./"]
+RUN dotnet restore "JobAppRazorWeb.csproj"
 COPY . .
 WORKDIR "/src/"
-RUN dotnet build "JobAppBlazorWeb.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN dotnet build "JobAppRazorWeb.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "JobAppBlazorWeb.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "JobAppRazorWeb.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "JobAppBlazorWeb.dll"]
+ENTRYPOINT ["dotnet", "JobAppRazorWeb.dll"]

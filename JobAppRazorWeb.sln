@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JobAppBlazorWeb", "JobAppBlazorWeb.csproj", "{D7446F7A-17FA-4067-859F-2E67572EE650}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JobAppRazorWeb", "JobAppRazorWeb.csproj", "{D7446F7A-17FA-4067-859F-2E67572EE650}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F9DADC53-F77E-4D3D-B49E-7ADC2EDC0545}"
 	ProjectSection(SolutionItems) = preProject

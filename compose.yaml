@@ -1,6 +1,6 @@
 ﻿services:
-  jobappblazorweb:
-    image: jobappblazorweb
+  jobappRazorweb:
+    image: jobappRazorweb
     build:
       context: .
       dockerfile: Dockerfile

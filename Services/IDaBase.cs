@@ -1,6 +1,6 @@
-using JobAppBlazorWeb.Models;
+using JobAppRazorWeb.Models;
 
-namespace JobAppBlazorWeb.Services;
+namespace JobAppRazorWeb.Services;
 
 public interface IDaBase
 {
