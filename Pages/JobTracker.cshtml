@@ -56,7 +56,7 @@
         {
             <tr>
                 <td>@job.JobIndex</td>
-                <td class="text-truncate border-end trim-columns" title="Job ID: @job.JobId">@job.JobBoard</td>
+                <td class="text-truncate border-end trim-columns" title="Job ID: @job.JobId" data-jobid="@job.JobId" onclick="copyJobId(this)" >@job.JobBoard</td>
                 <td class="text-truncate border-end trim-columns" title="@job.Company"
                     onclick="setToInput(this)">@job.Company</td>
                 <td class="text-truncate border-end trim-columns" title="@job.Title">@job.Title</td>
@@ -79,19 +79,34 @@
                     }
                 </td>
                 <td>
-                    <button class="" type="button" onclick="modifyApplication('applied', '@job.JobId')">✅</button>
-                    <button class="" type="button" onclick="modifyApplication('duplicate', '@job.JobId')">
+                    <button type="button" onclick="modifyApplication('applied', '@job.JobId')">✅</button>
+                    <button type="button" onclick="modifyApplication('duplicate', '@job.JobId')">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style="fill: #e8ce00; height: 12px;">
                             <path d="M208 0L332.1 0c12.7 0 24.9 5.1 33.9 14.1l67.9 67.9c9 9 14.1 21.2 14.1 33.9L448 336c0 26.5-21.5 48-48 48l-192 0c-26.5 0-48-21.5-48-48l0-288c0-26.5 21.5-48 48-48zM48 128l80 0 0 64-64 0 0 256 192 0 0-32 64 0 0 48c0 26.5-21.5 48-48 48L48 512c-26.5 0-48-21.5-48-48L0 176c0-26.5 21.5-48 48-48z"/>
                         </svg>
                     </button>
-                    <button class="" type="button" onclick="modifyApplication('ignore', '@job.JobId')">❌</button>
+                    <button type="button" onclick="modifyApplication('ignore', '@job.JobId')">❌</button>
                 </td>
             </tr>
         }
         </tbody>
     </table>
-
+    <div id="toast" style="
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background-color: #333;
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 1000;
+    pointer-events: none;
+">
+        Copied to clipboard!
+    </div>
 </div>
 </body>
 
@@ -139,6 +154,32 @@
     function clearInput(elementId) {
         document.getElementById(elementId).value = "";
         form.submit();
+    }
+    
+    //Copy JobId To clipboard
+    function copyJobId(cell) {
+        const jobId = cell.dataset.jobid;
+
+        if (!jobId) {
+            alert('Job ID not found');
+            return;
+        }
+        
+        navigator.clipboard.writeText(jobId)
+            .then(() => {
+                showToast('Copied Job ID: ' + jobId);
+            });
+    }
+    
+    //Show Toast
+    function showToast(message) {
+        const toast = document.getElementById("toast");
+        toast.textContent = message;
+        toast.style.opacity = 1;
+
+        setTimeout(() => {
+            toast.style.opacity = 0;
+        }, 2000); // hide after 2 seconds
     }
     
     //Modify Job clicks
