@@ -59,6 +59,16 @@ public class JobsModel(IDaBase daBase) : PageModel
         }
         return new JsonResult(updatedJob.JobId);
     }
+
+    public async Task<IActionResult> OnPostAddJobAsync([FromBody] AddJobDto newJob)
+    {
+        var addedJob = await daBase.AddJobAsync(newJob);
+        if (addedJob == null)
+        {
+            return BadRequest();
+        }
+        return new JsonResult(addedJob.JobId);
+    }
     
     private bool UrlMatch(string url)
     {
