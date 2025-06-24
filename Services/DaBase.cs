@@ -39,7 +39,7 @@ public class DaBase : IDaBase
         await using (var insertCmd = new SQLiteCommand(insertQuery, conn))
         {
             insertCmd.Parameters.AddWithValue("@job_id", appliedJob.JobId);
-            insertCmd.Parameters.AddWithValue("@applied", appliedJob.Applied ?? (object)DBNull.Value);
+            insertCmd.Parameters.AddWithValue("@applied", appliedJob.Applied);
             insertCmd.Parameters.AddWithValue("@applied_on", appliedJob.AppliedOn ?? (object)DBNull.Value);
             await insertCmd.ExecuteNonQueryAsync().ConfigureAwait(false);
         }
@@ -75,20 +75,24 @@ public class DaBase : IDaBase
 
     public async Task<JobViewModel?> AddJobAsync(AddJobDto newJob)
     {
-        var jobId = HashUrl(newJob.ApplyUrl);
-        var now = DateTime.UtcNow;
-
+        string jobId = HashUrl(newJob.ApplyUrl);
+        var now = DateTime.UtcNow.AddMinutes(5).ToString("yyyy-MM-ddTHH:mm:ssZ");
+        string manualJobBoard = newJob.JobBoard + " - Manual";
+        
+        
         await using var conn = new SQLiteConnection(_connectionString);
         await conn.OpenAsync().ConfigureAwait(false);
 
         string insertJob = @"
             INSERT INTO jobs (job_id, job_board, company, title, apply_url, first_seen, last_seen)
-            VALUES (@job_id, @job_board, @company, @title, @apply_url, @now, @now);";
+            VALUES (@job_id, @job_board, @company, @title, @apply_url, @now, @now)
+            ON CONFLICT(job_id) DO UPDATE SET
+                last_seen = excluded.last_seen;";
 
         await using (var jobCmd = new SQLiteCommand(insertJob, conn))
         {
             jobCmd.Parameters.AddWithValue("@job_id", jobId);
-            jobCmd.Parameters.AddWithValue("@job_board", newJob.JobBoard);
+            jobCmd.Parameters.AddWithValue("@job_board", manualJobBoard);
             jobCmd.Parameters.AddWithValue("@company", newJob.Company);
             jobCmd.Parameters.AddWithValue("@title", newJob.Title);
             jobCmd.Parameters.AddWithValue("@apply_url", newJob.ApplyUrl);
@@ -98,7 +102,10 @@ public class DaBase : IDaBase
 
         string insertApp = @"
             INSERT INTO applications (job_id, applied, applied_on)
-            VALUES (@job_id, 'YES', @now);";
+            VALUES (@job_id, 'YES', @now)
+            ON CONFLICT(job_id) DO UPDATE SET
+                applied = excluded.applied,
+                applied_on = excluded.applied_on;";
 
         await using (var appCmd = new SQLiteCommand(insertApp, conn))
         {
@@ -139,7 +146,7 @@ public class DaBase : IDaBase
     private static string HashUrl(string url)
     {
         using var md5 = MD5.Create();
-        var bytes = md5.ComputeHash(Encoding.UTF8.GetBytes(url));
+        byte[] bytes = md5.ComputeHash(Encoding.UTF8.GetBytes(url));
         return BitConverter.ToString(bytes).Replace("-", string.Empty).ToLowerInvariant();
     }
 
