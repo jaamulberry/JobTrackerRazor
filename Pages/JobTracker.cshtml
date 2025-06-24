@@ -226,7 +226,7 @@
         
         if (action === 'applied') {
             payload.applied = "YES";
-            payload.appliedOn = new Date().toISOString();
+            payload.appliedOn = new Date().toISOString().split('.')[0] + 'Z';
         }
         if (action === 'duplicate') {
             payload.applied = "DUPE"
