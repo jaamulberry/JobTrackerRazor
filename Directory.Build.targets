@@ -1,5 +1,6 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <Target Name="RunHashScriptOnChange" AfterTargets="Build">
-        <Exec Command="powershell -ExecutionPolicy Bypass -File generate-reload.ps1" />
+        <Exec Condition=" '$(OS)' == 'Windows_NT' "
+              Command="powershell -ExecutionPolicy Bypass -File generate-reload.ps1" />
     </Target>
 </Project>

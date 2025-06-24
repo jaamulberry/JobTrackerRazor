@@ -6,4 +6,5 @@ public interface IDaBase
 {
     public Task<List<JobViewModel>> GetJobsAsync();
     public Task<JobViewModel?> UpdateApplicationAsync(ModifyApplicationDto appliedJob);
+    public Task<JobViewModel?> AddJobAsync(AddJobDto newJob);
 }
