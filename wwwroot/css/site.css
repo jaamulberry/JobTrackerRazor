@@ -56,6 +56,6 @@ a:visited {
 }
 
 /* Highlighted job row */
-.highlight-row {
-  background-color: #314b8a !important;
+tr.highlight-row > td{
+  color: #00dfdf !important;
 }

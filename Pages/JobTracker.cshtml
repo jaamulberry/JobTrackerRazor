@@ -64,7 +64,13 @@
                 <td class="text-nowrap  border-end">@job.FirstSeen.ToString("MM-dd hh:mm tt")</td>
                 <td class="text-nowrap  border-end">@job.LastSeen.ToString("MM-dd hh:mm tt")</td>
                 <td class="text-truncate border-end" style="max-width: 500px;" title="@job.ApplyUrl">
-                    <a href="@job.ApplyUrl" target="_blank" class="apply-link" data-jobid="@job.JobId">@job.ApplyUrl</a>
+                    <a href="@job.ApplyUrl"
+                       target="_blank"
+                       class="apply-link"
+                       data-jobid="@job.JobId"
+                       onclick="onApplyClick(event, this)">
+                        @job.ApplyUrl
+                    </a>
                 </td>
                 <td class="text-nowrap  border-end">
                     @if (!string.IsNullOrWhiteSpace(job.Applied) && job.Applied.ToUpper() == "NO")
@@ -223,6 +229,23 @@
             row.classList.add('highlight-row');
         }
     }
+    function onApplyClick(event, link) {
+        event.preventDefault(); // Stop default link behavior
+
+        const jobId = link.dataset.jobid;
+        const cell = link.closest('td');
+        const row = cell?.parentElement;
+
+        if (jobId && row) {
+            highlightRow(row);
+            localStorage.setItem('highlightJobId', jobId);
+        }
+
+        // Open the URL in a new tab AFTER highlight
+        window.open(link.href, '_blank');
+    }
+
+
 
     // Restore highlight from previous selection
     const storedJob = localStorage.getItem('highlightJobId');
