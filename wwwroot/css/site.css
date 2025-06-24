@@ -54,3 +54,8 @@ a:visited {
 .table td {
   padding: 2px !important;
 }
+
+/* Highlighted job row */
+.highlight-row {
+  background-color: #314b8a !important;
+}
