@@ -64,7 +64,7 @@
                 <td class="text-nowrap  border-end">@job.FirstSeen.ToString("MM-dd hh:mm tt")</td>
                 <td class="text-nowrap  border-end">@job.LastSeen.ToString("MM-dd hh:mm tt")</td>
                 <td class="text-truncate border-end" style="max-width: 500px;" title="@job.ApplyUrl">
-                    <a href="@job.ApplyUrl" target="_blank">@job.ApplyUrl</a>
+                    <a href="@job.ApplyUrl" target="_blank" class="apply-link" data-jobid="@job.JobId">@job.ApplyUrl</a>
                 </td>
                 <td class="text-nowrap  border-end">
                     @if (!string.IsNullOrWhiteSpace(job.Applied) && job.Applied.ToUpper() == "NO")
@@ -215,10 +215,37 @@
             toast.style.opacity = 0;
         }, 2000); // hide after 2 seconds
     }
-    
+
+    // Highlight job rows when clicking apply links
+    function highlightRow(row) {
+        document.querySelectorAll('tr.highlight-row').forEach(r => r.classList.remove('highlight-row'));
+        if (row) {
+            row.classList.add('highlight-row');
+        }
+    }
+
+    // Restore highlight from previous selection
+    const storedJob = localStorage.getItem('highlightJobId');
+    if (storedJob) {
+        const el = document.querySelector(`a.apply-link[data-jobid="${storedJob}"]`);
+        if (el) {
+            highlightRow(el.closest('tr'));
+        }
+    }
+
+    document.querySelectorAll('a.apply-link').forEach(link => {
+        link.addEventListener('click', () => {
+            localStorage.setItem('highlightJobId', link.dataset.jobid);
+            highlightRow(link.closest('tr'));
+        });
+    });
+
     //Modify Job clicks
 
     async function modifyApplication(action, jobId) {
+
+        // clear highlight on action
+        localStorage.removeItem('highlightJobId');
         
         let payload = {
             jobId: jobId
