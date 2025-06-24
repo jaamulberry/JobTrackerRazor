@@ -31,7 +31,9 @@ public class JobsModel(IDaBase daBase) : PageModel
             .Where(j => string.IsNullOrEmpty(UrlSearch) ||
                         UrlMatch(j.ApplyUrl))
             .Where(j => ShowApplied || j.Applied != "YES")
-            .Where(j => !HideNo || j.Applied != "NO")
+            .Where(j => !HideNo || j.Applied != "NO" || 
+                        (!string.IsNullOrEmpty(CompanySearch) &&
+                         j.Company.Contains(CompanySearch, StringComparison.OrdinalIgnoreCase)))
             .Where(j => j.Applied != "DUPE")
             .ToList();
 
