@@ -42,12 +42,14 @@
         <thead>
         <tr class="border border-dark bg-danger">
             <th>#</th>
-            <th>Job Board</th>
-            <th>Company</th>
-            <th>Title</th>
-            <th>First Seen</th>
-            <th>Last Seen</th>
-            <th>Apply</th>
+            <th class="job-board">Job Board</th>
+            <th class="company">Company</th>
+            <th class="title">Title</th>
+            <th class="board-title-company d-none">Board Comp Title</th>
+            <th class="first-seen">First Seen</th>
+            <th class="last-seen">Last Seen</th>
+            <th class="first-last-seen d-none">First/Last</th>
+            <th class="apply-cell">Apply</th>
             <th>Applied On</th>
             <th>Actions</th>
         </tr>
@@ -57,13 +59,25 @@
         {
             <tr>
                 <td>@job.JobIndex</td>
-                <td class="text-truncate border-end trim-columns" title="Job ID: @job.JobId" data-jobid="@job.JobId" onclick="copyJobId(this)" >@job.JobBoard</td>
-                <td class="text-truncate border-end trim-columns" title="@job.Company"
+                <td class="text-truncate border-end trim-columns job-board" title="Job ID: @job.JobId" data-jobid="@job.JobId" onclick="copyJobId(this)" >@job.JobBoard</td>
+                <td class="text-truncate border-end trim-columns company" title="@job.Company"
                     onclick="setToInput(this)">@job.Company</td>
-                <td class="text-truncate border-end trim-columns" title="@job.Title">@job.Title</td>
-                <td class="text-nowrap  border-end">@job.FirstSeen.ToString("MM-dd hh:mm tt")</td>
-                <td class="text-nowrap  border-end">@job.LastSeen.ToString("MM-dd hh:mm tt")</td>
-                <td class="text-truncate border-end" style="max-width: 500px;" title="@job.ApplyUrl">
+                <td class="text-truncate border-end trim-columns title" title="@job.Title">@job.Title</td>
+                <td class="text-truncate border-end board-title-company d-none">
+                    <div>Board: @job.JobBoard</div>
+                    <br/>
+                    <div>Company: @job.Company</div>
+                    <br/>
+                    <div>Title: @job.Title</div>
+                </td>
+                <td class="text-nowrap  border-end first-seen">@job.FirstSeen.ToString("MM-dd hh:mm tt")</td>
+                <td class="text-nowrap  border-end last-seen">@job.LastSeen.ToString("MM-dd hh:mm tt")</td>
+                <td class="text-nowrap border-end first-last-seen d-none">
+                    <div>First: @job.FirstSeen.ToString("MM-dd hh:mm tt")</div>
+                    <br />
+                    <div>Last: @job.LastSeen.ToString("MM-dd hh:mm tt")</div>
+                </td>
+                <td class="text-truncate border-end apply-cell" title="@job.ApplyUrl">
                     <a href="@job.ApplyUrl"
                        target="_blank"
                        class="apply-link"

@@ -59,3 +59,68 @@ a:visited {
 tr.highlight-row > td{
   color: #00dfdf !important;
 }
+
+tr.highlight-row > td > button {
+  background: #45959e !important;
+}
+
+@media (min-width: 1320px) {
+  .apply-cell {
+    max-width: 500px !important;
+  }
+  
+  .first-last-seen {
+    display: none !important;
+  }
+  
+  .first-seen,
+  .last-seen {
+    display: table-cell !important;
+  }
+  
+  .board-title-company {
+    display: none !important;
+    max-width: 150px !important;
+  }
+  
+  .job-board,
+  .company,
+  .title{
+    display: table-cell !important;
+  }
+}
+
+@media (max-width: 1320px) {
+  tr > td > button {
+    margin: 5px;
+  }
+  
+  .job-board{
+    display: none;
+  }
+  
+  .apply-cell {
+    max-width: 100px !important;
+  }
+  
+  .first-last-seen {
+    display: table-cell !important;
+  }
+  
+  .first-seen,
+  .last-seen {
+    display: none !important;
+  }
+  
+  .board-title-company {
+    display: table-cell !important;
+    max-width: 150px !important;
+  }
+  
+  .job-board,
+  .company,
+  .title{
+    display: none !important;
+  }
+  
+}
