@@ -55,8 +55,8 @@ a:visited {
   padding: 2px !important;
 }
 
-/* Highlighted job row */
-tr.highlight-row > td{
+/* Highlighted job row on web link */
+tr.highlight-row > td {
   color: #00dfdf !important;
 }
 
@@ -64,6 +64,16 @@ tr.highlight-row > td > button {
   background: #45959e !important;
 }
 
+/* Highlight last applied Job */
+tr.applied-row > td {
+  color: #049300 !important;
+}
+
+tr.applied-row > td > button {
+  background: #05d500 !important;
+}
+
+/* Media Queries for mobile */
 @media (min-width: 1320px) {
   .apply-cell {
     max-width: 500px !important;

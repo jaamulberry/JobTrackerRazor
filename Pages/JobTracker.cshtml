@@ -100,7 +100,7 @@
                     }
                 </td>
                 <td>
-                    <button type="button" onclick="modifyApplication('applied', '@job.JobId')">✅</button>
+                    <button type="button" onclick="modifyApplication('applied', '@job.JobId', this)">✅</button>
                     <button type="button" onclick="modifyApplication('duplicate', '@job.JobId')">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style="fill: #e8ce00; height: 12px;">
                             <path d="M208 0L332.1 0c12.7 0 24.9 5.1 33.9 14.1l67.9 67.9c9 9 14.1 21.2 14.1 33.9L448 336c0 26.5-21.5 48-48 48l-192 0c-26.5 0-48-21.5-48-48l0-288c0-26.5 21.5-48 48-48zM48 128l80 0 0 64-64 0 0 256 192 0 0-32 64 0 0 48c0 26.5-21.5 48-48 48L48 512c-26.5 0-48-21.5-48-48L0 176c0-26.5 21.5-48 48-48z"/>
@@ -165,7 +165,7 @@
 </body>
 
 <script>
-    //Reload page on changes
+    //Reload page on changes from code
     const RELOAD_CHECK_INTERVAL = 3000; // ms
     let lastModified = null;
 
@@ -181,7 +181,7 @@
 
     setInterval(checkForChanges, RELOAD_CHECK_INTERVAL);
 
-    //Submit form on changes
+    //Submit search form changes
     let form = document.getElementById("filter-form");
 
     form.addEventListener('keydown', (event) => {
@@ -191,7 +191,7 @@
         }
     });
     
-    //If a checkbox changes submit the form
+    //If a checkbox changes submit the search form at the top
     document.querySelectorAll('#filter-form input[type="checkbox"]').forEach(cb => {
         cb.addEventListener('change', () => {
             form.submit();
@@ -233,16 +233,23 @@
 
         setTimeout(() => {
             toast.style.opacity = 0;
-        }, 2000); // hide after 2 seconds
+        }, 5000); // hide after 5 seconds
     }
 
-    // Highlight job rows when clicking apply links
-    function highlightRow(row) {
-        document.querySelectorAll('tr.highlight-row').forEach(r => r.classList.remove('highlight-row'));
-        if (row) {
+    
+    //Highlight Logic
+    // Add class to row for highlight
+    function highlightRow(row, type) {
+        document.querySelectorAll('tr.highlight-row').forEach(r => r.classList.remove('highlight-row', 'applied-row'));
+        if (row && type === 'apply') {
             row.classList.add('highlight-row');
         }
+        else if (row && type === 'applied') {
+            row.classList.add('applied-row');
+        }
     }
+    
+    //On Apply Click Highlight blue
     function onApplyClick(event, link) {
         event.preventDefault(); // Stop default link behavior
 
@@ -251,38 +258,45 @@
         const row = cell?.parentElement;
 
         if (jobId && row) {
-            highlightRow(row);
-            localStorage.setItem('highlightJobId', jobId);
+            highlightRow(row, "apply");
+            localStorage.setItem('applyJobId', jobId);
         }
 
         // Open the URL in a new tab AFTER highlight
         window.open(link.href, '_blank');
     }
+    
 
-
-
-    // Restore highlight from previous selection
-    const storedJob = localStorage.getItem('highlightJobId');
-    if (storedJob) {
-        const el = document.querySelector(`a.apply-link[data-jobid="${storedJob}"]`);
+    // Restore Apply highlight from previous selection
+    const applyJob = localStorage.getItem('applyJobId');
+    const appliedJob = localStorage.getItem('appliedJobId');
+    if (applyJob) {
+        const el = document.querySelector(`a.apply-link[data-jobid="${applyJob}"]`);
         if (el) {
-            highlightRow(el.closest('tr'));
+            highlightRow(el.closest('tr'), 'apply');
+        }
+    }
+    if (appliedJob) {
+        const el = document.querySelector(`a.apply-link[data-jobid="${appliedJob}"]`);
+        if (el) {
+            highlightRow(el.closest('tr'), 'applied');
         }
     }
 
     document.querySelectorAll('a.apply-link').forEach(link => {
         link.addEventListener('click', () => {
-            localStorage.setItem('highlightJobId', link.dataset.jobid);
-            highlightRow(link.closest('tr'));
+            localStorage.setItem('applyJobId', link.dataset.jobid);
+            highlightRow(link.closest('tr'), 'apply');
         });
     });
 
     //Modify Job clicks
-
-    async function modifyApplication(action, jobId) {
+    
+    async function modifyApplication(action, jobId, link = null) {
 
         // clear highlight on action
-        localStorage.removeItem('highlightJobId');
+        localStorage.removeItem('applyJobId');
+        localStorage.removeItem('appliedJobId');
         
         let payload = {
             jobId: jobId
@@ -312,7 +326,19 @@
             console.error('Failed to update job', await response.text());
             return;
         }
+        
+        //Highlight Row if Applied
+        if (action === 'applied') {
+            const appliedJobId = jobId
+            const cell = link.closest('td');
+            const row = cell?.parentElement;
 
+            if (appliedJobId && row) {
+                highlightRow(row, "applied");
+                localStorage.setItem('appliedJobId', jobId);
+            }
+        }
+        
         const result = await response.json();
         console.log('Job updated successfully:', result);
         const url = new URL(window.location.href);
