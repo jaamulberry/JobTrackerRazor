@@ -2,14 +2,14 @@ name: Build and Push Docker image
 
 on:
   push:
-    branches: [ "main" ]   # triggers only when you push to main
+    branches: [ "main" ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     permissions:
-      contents: read
+      contents: write
       packages: write
 
     steps:
@@ -23,9 +23,31 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Generate semantic date version
+        id: version
+        run: |
+          DATE=$(date +'%Y.%m.%d')
+          # Count existing releases for today
+          COUNT=$(gh release list --limit 100 --json tagName -q ".[] | select(.tagName | startswith(\"$DATE\"))" | wc -l)
+          COUNT=$((COUNT+1))
+          VERSION="$DATE.$COUNT"
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
           context: .
           push: true
-          tags: ghcr.io/${{ github.repository_owner }}/JobTrackerRazor:latest
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/jobtrackerrazor:latest
+            ghcr.io/${{ github.repository_owner }}/jobtrackerrazor:${{ env.VERSION }}
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ env.VERSION }}
+          name: "Release ${{ env.VERSION }}"
+          draft: false
+          prerelease: false
