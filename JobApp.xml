@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <Container>
     <Name>JobAppRazorWeb</Name>
-    <Repository>jobapprazorweb</Repository>
+    <Repository>ghcr.io/jaamulberry/jobtrackerrazor:latest</Repository>
     <Registry></Registry>
     <Network>bridge</Network>
     <MyIP></MyIP>
