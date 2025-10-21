@@ -34,7 +34,7 @@ app.UseStaticFiles(new StaticFileOptions
     {
         if (ctx.File.Name == "_contenthash.txt")
         {
-            ctx.Context.Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
+            ctx.Context.Response.Headers["Cache-Control"] = "no-cache, ncmdo-store, must-revalidate";
         }
     }
 });

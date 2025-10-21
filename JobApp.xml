@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<Container>
+    <Name>JobAppRazorWeb</Name>
+    <Repository>jobapprazorweb</Repository>
+    <Registry></Registry>
+    <Network>bridge</Network>
+    <MyIP></MyIP>
+    <Shell>bash</Shell>
+    <Privileged>false</Privileged>
+    <Support></Support>
+    <Project></Project>
+    <Overview>Your ASP.NET Razor app with SQLite persistence</Overview>
+    <Category>Productivity:Web</Category>
+    <WebUI>http://[IP]:[PORT:31300]/</WebUI>
+    <TemplateURL></TemplateURL>
+    <Icon></Icon>
+    <ExtraParams></ExtraParams>
+    <PostArgs></PostArgs>
+    <CPUset></CPUset>
+    <DateInstalled></DateInstalled>
+    <DonateText></DonateText>
+    <DonateLink></DonateLink>
+    <Description>JobAppRazorWeb container with SQLite database mapped to Unraid share.</Description>
+    <Networking>
+        <Mode>bridge</Mode>
+        <Publish>
+            <Port>
+                <HostPort>31300</HostPort>
+                <ContainerPort>31300</ContainerPort>
+                <Protocol>tcp</Protocol>
+            </Port>
+        </Publish>
+    </Networking>
+    <Data>
+        <Volume>
+            <HostDir>/mnt/user/appdata/jobapp</HostDir>
+            <ContainerDir>/data</ContainerDir>
+            <Mode>rw</Mode>
+        </Volume>
+    </Data>
+    <Environment>
+        <Variable>
+            <Name>DB_PATH</Name>
+            <Value>/data/jobs.sqlite</Value>
+            <Mode></Mode>
+        </Variable>
+    </Environment>
+    <Labels/>
+    <Config Name="Web Port" Target="31300" Default="31300" Mode="tcp" Description="Container Port: 31300" Type="Port" Display="always" Required="true" Mask="false">31300</Config>
+    <Config Name="Appdata Path" Target="/data" Default="/mnt/user/appdata/jobapp" Mode="rw" Description="Persistent storage for SQLite DB" Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/jobapp</Config>
+    <Config Name="Database Path" Target="DB_PATH" Default="/data/jobs.sqlite" Mode="" Description="Path to SQLite database file inside container" Type="Variable" Display="always" Required="true" Mask="false">/data/jobs.sqlite</Config>
+</Container>

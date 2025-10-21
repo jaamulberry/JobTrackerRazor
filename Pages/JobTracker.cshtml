@@ -35,6 +35,7 @@
                 id="new-jobs-today-count">🆕 Jobs Found Today: @Model.JobTracker.NewJobCount ℹ️ Available to apply: @Model.JobTracker.NewJobAvailableCount</span>
             <span id="applied-today-count" class="me-2">🗓️ Applied Today: @Model.JobTracker.AppliedTodayCount</span>
             <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#addJobModal">Add Job</button>
+            <button type="button" class="btn btn-danger btn-sm" onclick="clearAll()">Clear All</button>
         </div>
     </div>
     <br/>
@@ -377,6 +378,14 @@
         url.searchParams.set('jobId', result);
         window.location.href = url.toString();
     });
+    
+    //Clear All Button
+    function clearAll() {
+        document.getElementById("company-search").value = "";
+        form.submit();
+        document.getElementById('url-search').value = "";
+        form.submit();
+    }
 </script>
 
 </html>

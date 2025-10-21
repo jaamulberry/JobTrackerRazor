@@ -1,6 +1,12 @@
 ﻿services:
-  jobappRazorweb:
-    image: jobappRazorweb
+  jobAppRazorWeb:
+    image: jobapprazorweb
     build:
       context: .
       dockerfile: Dockerfile
+    ports:
+      - "31300:31300"
+    volumes:
+      # Map a persistent Unraid share to /data inside the container
+      - /mnt/user/appdata/jobapp:/data
+
