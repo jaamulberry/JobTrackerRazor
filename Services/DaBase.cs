@@ -7,7 +7,15 @@ namespace JobAppRazorWeb.Services;
 
 public class DaBase : IDaBase
 {
-    private readonly string _connectionString = "Data Source=T:/NextCloud/OneDrive/Scripts/Python/JobChecker/jobs.sqlite";
+    private readonly string _connectionString;
+
+    public DaBase(IConfiguration config)
+    {
+        _connectionString = config.GetConnectionString("DefaultConnection")
+                            ?? throw new InvalidOperationException("Connection String Not Found");
+
+        //"Data Source=T:/NextCloud/OneDrive/Scripts/Python/JobChecker/jobs.sqlite";
+    }
 
     public async Task<List<JobViewModel>> GetJobsAsync()
     {
