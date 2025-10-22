@@ -6,7 +6,7 @@
       - "31300:31300"
     environment:
       - TZ=America/Chicago
-      - DB_PATH=/db/jobs.sqlite
+      - ConnectionStrings__DefaultConnection=Data Source=/db/jobs.sqlite
     volumes:
       - /mnt/user/appdata/jobapp:/data
       - /mnt/data-drive/app_dbs/jobapp:/db
