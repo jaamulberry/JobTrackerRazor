@@ -7,6 +7,6 @@
     }
   },
   "ConnectionStrings": {
-    "DefaultConnection": "Data Source=T:/NextCloud/OneDrive/Scripts/Python/JobChecker/jobs.sqlite"
+    "DefaultConnection": "Data Source=C:\Your\Local\Database\Path"
   }
 }
