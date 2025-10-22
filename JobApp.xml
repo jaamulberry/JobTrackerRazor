@@ -21,12 +21,13 @@ Recommended: keep under /mnt/user/appdata/ for easy backup."
             Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/jobapp</Config>
 
     <!-- SQLite Database -->
-    <Config Name="Database File" Target="/data/jobs.sqlite" Default="/mnt/user/external_dbs/jobapp/jobs.sqlite" Mode="rw"
-            Description="Full path to the SQLite database file stored on Unraid. "
-            Type="Path" Display="always" Required="true" Mask="false">/mnt/user/external_dbs/jobapp/jobs.sqlite</Config>
+    <Config Name="Data Directory" Target="/data" Default="/mnt/user/external_dbs/jobapp" Mode="rw"
+            Description="Directory mapped into /data inside the container. The app will create or open /data/jobs.sqlite here."
+            Type="Path" Display="always" Required="true" Mask="false">/mnt/user/external_dbs/jobapp</Config>
+
 
     <!-- Readonly env var for the app (kept in Advanced) -->
     <Config Name="DB_PATH" Target="DB_PATH" Default="/data/jobs.sqlite" Mode=""
             Description="Environment variable used by the app. Matches the container path of the selected DB file."
-            Type="Variable" Display="advanced" Required="true" Mask="false" Readonly="true">/data/jobs.sqlite</Config>
+            Type="Variable" Display="advanced" Required="true" Mask="false">/data/jobs.sqlite</Config>
 </Container>
