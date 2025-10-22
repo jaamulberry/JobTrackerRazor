@@ -21,5 +21,5 @@ RUN dotnet publish "JobAppRazorWeb.csproj" -c $BUILD_CONFIGURATION -o /app/publi
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-VOLUME ["/data"]
+VOLUME ["/data", "/db"]
 ENTRYPOINT ["dotnet", "JobAppRazorWeb.dll"]

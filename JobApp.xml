@@ -5,6 +5,7 @@
     <Shell>bash</Shell>
     <Overview>ASP.NET Razor app with SQLite database persistence</Overview>
     <Category>Productivity:Web</Category>
+    <Network>bridge</Network>
     <WebUI>http://[IP]:[PORT:31300]/</WebUI>
     <Description>JobAppRazorWeb container running a Blazor/Razor web interface with a persistent SQLite database.
         Ensure your SQLite file path points to a valid Unraid share so data survives container updates.</Description>
@@ -20,13 +21,11 @@
 Recommended: keep under /mnt/user/appdata/ for easy backup."
             Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/jobapp</Config>
 
-    <!-- SQLite Database -->
-    <Config Name="Data Directory" Target="/data" Default="/mnt/user/external_dbs/jobapp" Mode="rw"
-            Description="Directory mapped into /data inside the container. The app will create or open /data/jobs.sqlite here."
-            Type="Path" Display="always" Required="true" Mask="false">/mnt/user/external_dbs/jobapp</Config>
-    
-    <!-- Readonly env var for the app (kept in Advanced) -->
-    <Config Name="DB_PATH" Target="DB_PATH" Default="/data/jobs.sqlite" Mode=""
-            Description="Environment variable used by the app. Matches the container path of the selected DB file."
-            Type="Variable" Display="advanced" Required="true" Mask="false">/data/jobs.sqlite</Config>
+    <Config Name="External Database Directory" Target="/db" Default="/mnt/data-drive/app_dbs/jobapp" Mode="rw"
+            Description="External folder to store SQLite database file. The app expects /db/jobs.sqlite."
+            Type="Path" Display="always" Required="true" Mask="false">/mnt/data-drive/app_dbs/jobapp</Config>
+
+    <Config Name="DB_PATH" Target="DB_PATH" Default="/db/jobs.sqlite" Mode=""
+            Description="Environment variable for the database file path inside the container"
+            Type="Variable" Display="advanced" Required="true" Mask="false">/db/jobs.sqlite</Config>
 </Container>
