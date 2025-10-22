@@ -3,9 +3,6 @@ USER $APP_UID
 WORKDIR /app
 EXPOSE 9000
 
-# Install SQLite
-RUN apt-get update && apt-get install -y sqlite3 libsqlite3-dev && rm -rf /var/lib/apt/lists/*
-
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
@@ -14,6 +11,8 @@ RUN dotnet restore "JobAppRazorWeb.csproj"
 COPY . .
 WORKDIR "/src/"
 RUN dotnet build "JobAppRazorWeb.csproj" -c $BUILD_CONFIGURATION -o /app/build
+# Install SQLite
+RUN apt-get update && apt-get install -y sqlite3 libsqlite3-dev && rm -rf /var/lib/apt/lists/*
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
