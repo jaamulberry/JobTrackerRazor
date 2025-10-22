@@ -2,51 +2,26 @@
 <Container>
     <Name>JobAppRazorWeb</Name>
     <Repository>ghcr.io/jaamulberry/jobtrackerrazor:latest</Repository>
-    <Registry></Registry>
-    <Network>bridge</Network>
-    <MyIP></MyIP>
     <Shell>bash</Shell>
-    <Privileged>false</Privileged>
-    <Support></Support>
-    <Project></Project>
-    <Overview>Your ASP.NET Razor app with SQLite persistence</Overview>
+    <Overview>ASP.NET Razor app with SQLite database persistence</Overview>
     <Category>Productivity:Web</Category>
     <WebUI>http://[IP]:[PORT:31300]/</WebUI>
-    <TemplateURL></TemplateURL>
-    <Icon></Icon>
-    <ExtraParams></ExtraParams>
-    <PostArgs></PostArgs>
-    <CPUset></CPUset>
-    <DateInstalled></DateInstalled>
-    <DonateText></DonateText>
-    <DonateLink></DonateLink>
-    <Description>JobAppRazorWeb container with SQLite database mapped to an Unraid share. WARNING: You need the SQLITE Database already!</Description>
-    <Networking>
-        <Mode>bridge</Mode>
-        <Publish>
-            <Port>
-                <HostPort>31300</HostPort>
-                <ContainerPort>31300</ContainerPort>
-                <Protocol>tcp</Protocol>
-            </Port>
-        </Publish>
-    </Networking>
-    <Data>
-        <Volume>
-            <HostDir>/mnt/user/appdata/jobapp</HostDir>
-            <ContainerDir>/data</ContainerDir>
-            <Mode>rw</Mode>
-        </Volume>
-    </Data>
-    <Environment>
-        <Variable>
-            <Name>DB_PATH</Name>
-            <Value>/data/jobs.sqlite</Value>
-            <Mode></Mode>
-        </Variable>
-    </Environment>
-    <Labels/>
-    <Config Name="Web Port" Target="31300" Default="31300" Mode="tcp" Description="Container Port: 31300" Type="Port" Display="always" Required="true" Mask="false">31300</Config>
-    <Config Name="Appdata Path" Target="/data" Default="/mnt/user/appdata/jobapp" Mode="rw" Description="Persistent storage for SQLite DB" Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/jobapp</Config>
-    <Config Name="Database Path" Target="DB_PATH" Default="/data/jobs.sqlite" Mode="" Description="Path to SQLite database file inside container" Type="Variable" Display="always" Required="true" Mask="false">/data/jobs.sqlite</Config>
+    <Description>JobAppRazorWeb container running a Blazor/Razor web interface with a persistent SQLite database.
+        Ensure your SQLite file path points to a valid Unraid share so data survives container updates.</Description>
+
+    <!-- Port Configuration -->
+    <Config Name="Web Port" Target="31300" Default="31300" Mode="tcp"
+            Description="Port used to access the Job Tracker web interface (e.g. http://serverip:31300)"
+            Type="Port" Display="always" Required="true" Mask="false">31300</Config>
+
+    <!-- Data Directory -->
+    <Config Name="Data Directory" Target="/data" Default="/mnt/user/appdata/jobapp" Mode="rw"
+            Description="Directory mapped inside the container for app configuration and runtime files. 
+Recommended: keep under /mnt/user/appdata/ for easy backup."
+            Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/jobapp</Config>
+
+    <!-- SQLite Database -->
+    <Config Name="Database File" Target="/data/jobs.sqlite" Default="/mnt/user/external_dbs/jobapp/jobs.sqlite" Mode="rw"
+            Description="Full path to the SQLite database file stored on Unraid. "
+            Type="Path" Display="always" Required="true" Mask="false">/mnt/user/external_dbs/jobapp/jobs.sqlite</Config>
 </Container>
