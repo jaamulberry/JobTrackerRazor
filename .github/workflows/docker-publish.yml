@@ -52,7 +52,7 @@ jobs:
           draft: false
           prerelease: false
           files: |
-            JobsApp.xml
+            JobApp.xml
             compose.yaml
           body: |
             ## Docker Images
