@@ -20,7 +20,7 @@
     <DateInstalled></DateInstalled>
     <DonateText></DonateText>
     <DonateLink></DonateLink>
-    <Description>JobAppRazorWeb container with SQLite database mapped to Unraid share.</Description>
+    <Description>JobAppRazorWeb container with SQLite database mapped to an Unraid share. WARNING: You need the SQLITE Database already!</Description>
     <Networking>
         <Mode>bridge</Mode>
         <Publish>
