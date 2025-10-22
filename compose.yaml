@@ -1,12 +1,18 @@
 ﻿services:
-  jobAppRazorWeb:
-    image: jobapprazorweb
-    build:
-      context: .
-      dockerfile: Dockerfile
+  jobapprazorweb:
+    image: ghcr.io/jaamulberry/jobtrackerrazor:latest
+    container_name: JobAppRazorWeb
     ports:
       - "31300:31300"
+    environment:
+      - TZ=America/Chicago
+      - ConnectionStrings__DefaultConnection=Data Source=/db/jobs.sqlite
     volumes:
-      # Map a persistent Unraid share to /data inside the container
       - /mnt/user/appdata/jobapp:/data
-
+      - /mnt/data-drive/app_dbs/jobapp:/db
+    restart: unless-stopped
+    networks:
+      - bridge
+networks:
+  bridge:
+    driver: bridge
