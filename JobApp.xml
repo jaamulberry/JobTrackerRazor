@@ -24,8 +24,7 @@ Recommended: keep under /mnt/user/appdata/ for easy backup."
     <Config Name="Data Directory" Target="/data" Default="/mnt/user/external_dbs/jobapp" Mode="rw"
             Description="Directory mapped into /data inside the container. The app will create or open /data/jobs.sqlite here."
             Type="Path" Display="always" Required="true" Mask="false">/mnt/user/external_dbs/jobapp</Config>
-
-
+    
     <!-- Readonly env var for the app (kept in Advanced) -->
     <Config Name="DB_PATH" Target="DB_PATH" Default="/data/jobs.sqlite" Mode=""
             Description="Environment variable used by the app. Matches the container path of the selected DB file."
