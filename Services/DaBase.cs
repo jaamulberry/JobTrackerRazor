@@ -11,10 +11,9 @@ public class DaBase : IDaBase
 
     public DaBase(IConfiguration config)
     {
-        _connectionString = config.GetConnectionString("DefaultConnection")
+        var dbPath = Environment.GetEnvironmentVariable("DB_PATH");
+        _connectionString = $"Data Source ={dbPath}"
                             ?? throw new InvalidOperationException("Connection String Not Found");
-
-        //"Data Source=T:/NextCloud/OneDrive/Scripts/Python/JobChecker/jobs.sqlite";
     }
 
     public async Task<List<JobViewModel>> GetJobsAsync()
