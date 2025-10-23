@@ -1,7 +1,18 @@
 using System.Collections.Immutable;
 using JobAppRazorWeb.Services;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Remove anything that might register file-based DP / key management
+builder.Services.RemoveAll<IDataProtectionProvider>();
+builder.Services.RemoveAll<IConfigureOptions<KeyManagementOptions>>();
+
+// Force ephemeral provider only (no files, no encryptor warnings)
+builder.Services.AddSingleton<IDataProtectionProvider, EphemeralDataProtectionProvider>();
 
 // Add services to the container.
 builder.Services.AddRazorPages();

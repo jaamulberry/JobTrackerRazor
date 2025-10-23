@@ -11,10 +11,22 @@ public class DaBase : IDaBase
 
     public DaBase(IConfiguration config)
     {
-        _connectionString = config.GetConnectionString("DefaultConnection")
-                            ?? throw new InvalidOperationException("Connection String Not Found");
+        var dbPath = Environment.GetEnvironmentVariable("DB_PATH");
+        string? connectionString = null;
 
-        //"Data Source=T:/NextCloud/OneDrive/Scripts/Python/JobChecker/jobs.sqlite";
+        if (!string.IsNullOrWhiteSpace(dbPath))
+        {
+            connectionString = $"Data Source={dbPath}";
+        }
+
+        connectionString ??= config.GetConnectionString("DefaultConnection");
+
+        if (string.IsNullOrWhiteSpace(connectionString))
+        {
+            throw new InvalidOperationException("Connection string not found. Set DB_PATH or ConnectionStrings:DefaultConnection.");
+        }
+
+        _connectionString = connectionString;
     }
 
     public async Task<List<JobViewModel>> GetJobsAsync()
