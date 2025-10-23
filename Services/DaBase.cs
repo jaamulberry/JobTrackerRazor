@@ -12,6 +12,10 @@ public class DaBase : IDaBase
     public DaBase(IConfiguration config)
     {
         var dbPath = Environment.GetEnvironmentVariable("DB_PATH");
+        
+        if (string.IsNullOrWhiteSpace(dbPath))
+            throw new InvalidOperationException("DB_PATH Not Found");
+        
         _connectionString = $"Data Source ={dbPath}"
                             ?? throw new InvalidOperationException("Connection String Not Found");
     }
