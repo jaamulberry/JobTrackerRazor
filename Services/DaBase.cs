@@ -1,7 +1,8 @@
-using System.Data.SQLite;
 using JobAppRazorWeb.Models;
 using System.Security.Cryptography;
 using System.Text;
+using Npgsql;
+
 
 namespace JobAppRazorWeb.Services;
 
@@ -9,25 +10,39 @@ public class DaBase : IDaBase
 {
     private readonly string _connectionString;
 
-    public DaBase(IConfiguration config)
+public DaBase(IConfiguration config)
+{
+    Console.WriteLine("========== DaBase START ==========");
+
+    // Dump env var PG_CONNECTION_STRING
+    var envConn = Environment.GetEnvironmentVariable("PG_CONNECTION_STRING");
+    Console.WriteLine($"[DaBase DEBUG] PG_CONNECTION_STRING null/empty? " + (string.IsNullOrWhiteSpace(envConn) ? "YES" : "NO"));
+
+    // Dump DefaultConnection from config
+    var cfgConn = config.GetConnectionString("DefaultConnection");
+
+    // Decide which one to use
+    string? connectionString = !string.IsNullOrWhiteSpace(envConn)
+        ? envConn
+        : cfgConn;
+
+    Console.WriteLine($"[DaBase DEBUG] Final connection string null/empty? " +
+                      (string.IsNullOrWhiteSpace(connectionString) ? "YES" : "NO"));
+
+    if (string.IsNullOrWhiteSpace(connectionString))
     {
-        var dbPath = Environment.GetEnvironmentVariable("DB_PATH");
-        string? connectionString = null;
-
-        if (!string.IsNullOrWhiteSpace(dbPath))
-        {
-            connectionString = $"Data Source={dbPath}";
-        }
-
-        connectionString ??= config.GetConnectionString("DefaultConnection");
-
-        if (string.IsNullOrWhiteSpace(connectionString))
-        {
-            throw new InvalidOperationException("Connection string not found. Set DB_PATH or ConnectionStrings:DefaultConnection.");
-        }
-
-        _connectionString = connectionString;
+        Console.WriteLine("[DaBase DEBUG] No usable connection string. Throwing.");
+        Console.WriteLine("========== DaBase END (FAIL) ==========");
+        throw new InvalidOperationException("Connection String Not Found");
     }
+
+    _connectionString = connectionString;
+
+    Console.WriteLine($"[DaBase DEBUG] Using connection string. Found valid one.");
+    Console.WriteLine("========== DaBase END (OK) ==========");
+}
+
+
 
     public async Task<List<JobViewModel>> GetJobsAsync()
     {
@@ -46,7 +61,7 @@ public class DaBase : IDaBase
 
     public async Task<JobViewModel?> UpdateApplicationAsync(ModifyApplicationDto appliedJob)
     {
-        await using var conn = new SQLiteConnection(_connectionString);
+        await using var conn = new NpgsqlConnection(_connectionString);
         await conn.OpenAsync().ConfigureAwait(false);
 
         string insertQuery = @"
@@ -56,7 +71,7 @@ public class DaBase : IDaBase
                 applied_on = excluded.applied_on,
                 applied = excluded.applied;";
 
-        await using (var insertCmd = new SQLiteCommand(insertQuery, conn))
+        await using (var insertCmd = new NpgsqlCommand(insertQuery, conn))
         {
             insertCmd.Parameters.AddWithValue("@job_id", appliedJob.JobId);
             insertCmd.Parameters.AddWithValue("@applied", appliedJob.Applied);
@@ -70,7 +85,7 @@ public class DaBase : IDaBase
             LEFT JOIN applications a ON j.job_id = a.job_id
             WHERE j.job_id = @job_id;";
 
-        await using var selectCmd = new SQLiteCommand(selectQuery, conn);
+        await using var selectCmd = new NpgsqlCommand(selectQuery, conn);
         selectCmd.Parameters.AddWithValue("@job_id", appliedJob.JobId);
 
         await using var reader = await selectCmd.ExecuteReaderAsync().ConfigureAwait(false);
@@ -100,7 +115,7 @@ public class DaBase : IDaBase
         string manualJobBoard = newJob.JobBoard + " - Manual";
         
         
-        await using var conn = new SQLiteConnection(_connectionString);
+        await using var conn = new NpgsqlConnection(_connectionString);
         await conn.OpenAsync().ConfigureAwait(false);
 
         string insertJob = @"
@@ -109,7 +124,7 @@ public class DaBase : IDaBase
             ON CONFLICT(job_id) DO UPDATE SET
                 last_seen = excluded.last_seen;";
 
-        await using (var jobCmd = new SQLiteCommand(insertJob, conn))
+        await using (var jobCmd = new NpgsqlCommand(insertJob, conn))
         {
             jobCmd.Parameters.AddWithValue("@job_id", jobId);
             jobCmd.Parameters.AddWithValue("@job_board", manualJobBoard);
@@ -127,7 +142,7 @@ public class DaBase : IDaBase
                 applied = excluded.applied,
                 applied_on = excluded.applied_on;";
 
-        await using (var appCmd = new SQLiteCommand(insertApp, conn))
+        await using (var appCmd = new NpgsqlCommand(insertApp, conn))
         {
             appCmd.Parameters.AddWithValue("@job_id", jobId);
             appCmd.Parameters.AddWithValue("@now", now);
@@ -140,7 +155,7 @@ public class DaBase : IDaBase
             LEFT JOIN applications a ON j.job_id = a.job_id
             WHERE j.job_id = @job_id;";
 
-        await using var selectCmd = new SQLiteCommand(selectQuery, conn);
+        await using var selectCmd = new NpgsqlCommand(selectQuery, conn);
         selectCmd.Parameters.AddWithValue("@job_id", jobId);
 
         await using var reader = await selectCmd.ExecuteReaderAsync().ConfigureAwait(false);
@@ -174,10 +189,10 @@ public class DaBase : IDaBase
     {
         var jobs = new List<JobViewModel>();
 
-        await using var conn = new SQLiteConnection(_connectionString);
+        await using var conn = new NpgsqlConnection(_connectionString);
         await conn.OpenAsync().ConfigureAwait(false);
 
-        await using var cmd = new SQLiteCommand(sqlQuery, conn);
+        await using var cmd = new NpgsqlCommand(sqlQuery, conn);
         await using var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false);
 
         while (await reader.ReadAsync().ConfigureAwait(false))

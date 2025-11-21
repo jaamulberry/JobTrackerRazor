@@ -2,9 +2,9 @@
 WORKDIR /app
 EXPOSE 31300
 # Create directories with proper permissions BEFORE switching user
-RUN mkdir -p /data /db && \
-    chown -R $APP_UID:$APP_UID /data /db && \
-    chmod -R 755 /data /db
+RUN mkdir -p /data && \
+    chown -R $APP_UID:$APP_UID /data && \
+    chmod -R 755 /data
 USER $APP_UID
 
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
@@ -15,8 +15,6 @@ RUN dotnet restore "JobAppRazorWeb.csproj"
 COPY . .
 WORKDIR "/src/"
 RUN dotnet build "JobAppRazorWeb.csproj" -c $BUILD_CONFIGURATION -o /app/build
-# Install SQLite
-RUN apt-get update && apt-get install -y sqlite3 libsqlite3-dev && rm -rf /var/lib/apt/lists/*
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
@@ -25,5 +23,5 @@ RUN dotnet publish "JobAppRazorWeb.csproj" -c $BUILD_CONFIGURATION -o /app/publi
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-VOLUME ["/data", "/db"]
+VOLUME ["/data"]
 ENTRYPOINT ["dotnet", "JobAppRazorWeb.dll"]
