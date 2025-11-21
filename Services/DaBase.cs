@@ -1,10 +1,7 @@
 using JobAppRazorWeb.Models;
 using System.Security.Cryptography;
 using System.Text;
-using System.Text.RegularExpressions;
 using Npgsql;
-using System;
-using System.Collections;
 
 
 namespace JobAppRazorWeb.Services;
