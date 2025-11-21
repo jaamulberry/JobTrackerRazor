@@ -6,7 +6,7 @@
       - "31300:31300"
     environment:
       - TZ=America/Chicago
-      - PG_CONNECTION_STRING=Host=<YourHost>;Database=job_tracker;Username=<YourUser>>;Password=<YourPassword>
+      - PG_CONNECTION_STRING=Host=<YourHost>;Database=job_tracker;Username=<YourUser>;Password=<YourPassword>
     volumes:
       - /mnt/user/appdata/jobapp:/data
     restart: unless-stopped
