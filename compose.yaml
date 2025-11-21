@@ -6,10 +6,9 @@
       - "31300:31300"
     environment:
       - TZ=America/Chicago
-      - ConnectionStrings__DefaultConnection=Data Source=/db/jobs.sqlite
+      - PG_CONNECTION_STRING=Host=<YourHost>;Database=job_tracker;Username=<YourUser>>;Password=<YourPassword>
     volumes:
       - /mnt/user/appdata/jobapp:/data
-      - /mnt/data-drive/app_dbs/jobapp:/db
     restart: unless-stopped
     networks:
       - bridge
