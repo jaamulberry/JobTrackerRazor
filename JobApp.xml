@@ -8,7 +8,8 @@
     <Network>bridge</Network>
     <WebUI>http://[IP]:[PORT:31300]/</WebUI>
     <Description>JobAppRazorWeb container running a Blazor/Razor web interface with a persistent SQLite database.
-        Ensure your SQLite file path points to a valid Unraid share so data survives container updates.</Description>
+        Ensure your SQLite file path points to a valid Unraid share so data survives container updates.
+    </Description>
 
     <!-- Port Configuration -->
     <Config Name="Web Port" Target="31300" Default="31300" Mode="tcp"
@@ -19,13 +20,13 @@
     <Config Name="Data Directory" Target="/data" Default="/mnt/user/appdata/jobapp" Mode="rw"
             Description="Directory mapped inside the container for app configuration and runtime files. 
 Recommended: keep under /mnt/user/appdata/ for easy backup."
-            Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/jobapp</Config>
-
-    <Config Name="External Database Directory" Target="/db" Default="/mnt/data-drive/app_dbs/jobapp" Mode="rw"
-            Description="External folder to store SQLite database file. The app expects /db/jobs.sqlite."
-            Type="Path" Display="always" Required="true" Mask="false">/mnt/data-drive/app_dbs/jobapp</Config>
-
-    <Config Name="DB_PATH" Target="DB_PATH" Default="/db/jobs.sqlite" Mode=""
-            Description="Environment variable for the database file path inside the container"
-            Type="Variable" Display="advanced" Required="true" Mask="false">/db/jobs.sqlite</Config>
+            Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/jobapp
+    </Config>
+    
+    <!-- Postgres Connection -->
+    <Config Name="Postgres Connection String" Target="PG_CONNECTION_STRING" 
+            Default="HOST=<YourHOST>;PORT=<Your_PostGress_Port>;Database=job_tracker;Username=<Your_userName>;Password=<YourPassword>;Application Name=<YourAppName>"
+            Description="Full connection string for Postgres access. Example: Host=postgres;Port=5432;Database=job_tracker;Username=psadmin;Password=yourpassword;Application Name=JobRazorApp" 
+            Type="Environment" Display="always" Required="true">
+    </Config>
 </Container>
