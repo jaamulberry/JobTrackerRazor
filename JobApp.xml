@@ -27,6 +27,6 @@ Recommended: keep under /mnt/user/appdata/ for easy backup."
     <Config Name="Postgres Connection String" Target="PG_CONNECTION_STRING" 
             Default="HOST=<YourHOST>;PORT=<Your_PostGress_Port>;Database=job_tracker;Username=<Your_userName>;Password=<YourPassword>;Application Name=<YourAppName>"
             Description="Full connection string for Postgres access. Example: Host=postgres;Port=5432;Database=job_tracker;Username=psadmin;Password=yourpassword;Application Name=JobRazorApp" 
-            Type="Environment" Display="always" Required="true">
+            Type="Variable" Display="always" Required="true">
     </Config>
 </Container>
